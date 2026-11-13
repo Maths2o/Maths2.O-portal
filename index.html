@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maths2.O — Student & Admin Portal</title>
+<style>
+:root{--bg:#08111f;--panel:#111f33;--panel2:#0c192b;--line:#263952;--text:#f4f7fb;--muted:#9eb0c8;--blue:#4d8dff;--green:#16a879;--red:#c44d60}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,Arial,sans-serif}
+header{padding:17px 16px;background:#0d1a2c;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-size:25px;font-weight:800;color:#83b1ff}.sub{color:var(--muted);font-size:12px}
+main{max-width:1000px;margin:auto;padding:15px}.nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+button{border:0;border-radius:9px;padding:11px 14px;background:var(--blue);color:white;font-weight:700;cursor:pointer}
+button.secondary{background:#2a405e}button.green{background:var(--green)}button.red{background:var(--red)}button:disabled{opacity:.5}
+.tab{background:#1a2b42}.tab.active{background:var(--blue)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{font-size:19px;margin:0 0 13px}h3{font-size:17px}.muted,.hint{color:var(--muted);font-size:13px;line-height:1.5}
+label{display:block;margin:11px 0 6px;font-weight:650}input,select,textarea{width:100%;padding:12px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:white;font-size:15px}
+textarea{min-height:75px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px}.stat b{font-size:26px;color:#8db7ff;display:block}
+.hidden{display:none!important}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#1e3859;color:#b9d4ff;font-size:12px}
+.testrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:12px 0}
+.option{display:block;width:100%;text-align:left;background:#20334d;margin:8px 0;font-weight:500}.option.selected{outline:2px solid #8db7ff}.option.right{background:#126449}.option.wrong{background:#793a49}
+.progress{height:7px;background:#253750;border-radius:8px;overflow:hidden;margin:10px 0}.progress span{display:block;height:100%;background:var(--blue)}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:9px;border-bottom:1px solid var(--line);text-align:left}
+@media(max-width:600px){main{padding:10px}.grid,.grid3,.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:span 2}}
+</style></head>
+<body>
+<header><div><div class="brand">Maths2.O</div><div class="sub">Competitive Exam Learning Portal · Hindi + English</div></div><span class="pill">DEMO VERSION 3</span></header>
+<main>
+<div class="nav">
+<button class="tab active" onclick="page('home',this)">Student Home</button>
+<button class="tab" onclick="page('tests',this)">Available Tests</button>
+<button class="tab" onclick="page('results',this)">My Results</button>
+<button class="tab" onclick="page('admin',this)">Admin Panel</button>
+</div>
+<section id="home" class="screen">
+<div class="card"><h2>नमस्ते! अपनी तैयारी शुरू करें</h2><p class="muted">SSC · Railway · Bihar Exams · Maths · Reasoning · GK · English</p><div class="actions"><button onclick="page('tests')">टेस्ट देखें</button><button class="secondary" onclick="page('results')">अपना Result देखें</button></div></div>
+<div class="stats"><div class="stat"><b id="sTests">0</b><span class="muted">कुल टेस्ट</span></div><div class="stat"><b id="sQuestions">0</b><span class="muted">कुल प्रश्न</span></div><div class="stat"><b id="sAttempts">0</b><span class="muted">मेरे Attempts</span></div></div>
+<div class="card" style="margin-top:14px"><h2>महत्वपूर्ण सूचना</h2><p class="hint">यह अभी एक कार्यशील local demo है। Admin द्वारा बनाए गए टेस्ट इसी ब्राउज़र में सेव होंगे। वास्तविक वेबसाइट पर अलग-अलग विद्यार्थियों के खाते, online database और shared leaderboard जोड़ना अगला तकनीकी चरण है।</p></div>
+</section>
+<section id="tests" class="screen hidden"><div class="card"><h2>Available Tests</h2><div class="grid"><div><label>Exam / Category</label><select id="filterCat" onchange="renderTests()"><option value="all">सभी Categories</option></select></div><div><label>Search Test</label><input id="searchTest" placeholder="टेस्ट का नाम..." oninput="renderTests()"></div></div><div id="testList"></div></div></section>
+<section id="results" class="screen hidden"><div class="card"><h2>My Results</h2><div id="resultList" class="muted">अभी कोई टेस्ट नहीं दिया गया।</div></div></section>
+<section id="admin" class="screen hidden">
+<div class="card"><h2>Admin — नया Test बनाएं</h2>
+<div class="grid"><div><label>Exam / Category</label><select id="cat"><option>SSC CGL</option><option>SSC CHSL</option><option>Railway</option><option>Bihar Exams</option><option>Maths</option><option>Reasoning</option><option>General Knowledge</option><option>English</option><option>Other</option></select></div><div><label>Test Name</label><input id="title" placeholder="जैसे: Percentage Set 1"></div></div>
+<div class="grid3"><div><label>समय (मिनट)</label><input id="minutes" type="number" min="1" value="10"></div><div><label>सही उत्तर अंक</label><input id="positive" type="number" step=".25" value="2"></div><div><label>गलत उत्तर अंक</label><input id="negative" type="number" step=".25" value="0.5"></div></div>
+<div class="hint">हर टेस्ट के लिए समय और marking scheme सेट करें।</div>
+<hr style="border-color:var(--line);margin:18px 0">
+<h3>प्रश्न जोड़ें</h3>
+<label>Question (Hindi / English)</label><textarea id="question"></textarea>
+<div class="grid"><div><label>Option A</label><input id="a"></div><div><label>Option B</label><input id="b"></div><div><label>Option C</label><input id="c"></div><div><label>Option D</label><input id="d"></div></div>
+<div class="grid"><div><label>Correct Answer</label><select id="answer"><option>A</option><option>B</option><option>C</option><option>D</option></select></div><div><label>Explanation (optional)</label><input id="explain" placeholder="समाधान / व्याख्या"></div></div>
+<div class="actions"><button onclick="addQuestion()">इस Test में प्रश्न जोड़ें</button><button class="secondary" onclick="clearQuestion()">फॉर्म साफ करें</button></div>
+<div id="draftCount" class="hint">इस टेस्ट में 0 प्रश्न जोड़े गए हैं।</div>
+<div class="actions"><button class="green" onclick="publishTest()">Test सेव / Publish करें</button></div><div id="adminMsg" class="hint"></div>
+</div>
+<div class="card"><h2>Data Backup / Restore</h2><p class="hint">अपने टेस्ट और रिजल्ट की backup JSON फाइल डाउनलोड करें। Browser data मिटने पर backup से वापस ला सकते हैं।</p><div class="actions"><button class="secondary" onclick="backup()">Backup डाउनलोड करें</button><input style="max-width:100%" id="restoreFile" type="file" accept=".json"><button onclick="restore()">Backup Restore करें</button></div></div>
+<div class="card"><h2>Manage Tests</h2><div id="adminTests"></div></div>
+</section>
+<section id="exam" class="screen hidden"><div class="card"><div class="testrow"><div><span class="pill" id="examCategory"></span><h2 id="examTitle"></h2></div><div class="stat"><b id="timer">00:00</b><span class="muted">शेष समय</span></div></div><div class="progress"><span id="bar" style="width:0%"></span></div><div id="questionArea"></div><div class="actions"><button class="secondary" onclick="previousQ()">पिछला</button><button onclick="nextQ()">अगला</button><button class="green" onclick="submitTest()">Test Submit</button></div><p class="hint">समय समाप्त होने पर टेस्ट अपने-आप submit हो जाएगा।</p></div></section>
+<section id="review" class="screen hidden"><div class="card"><h2>Test Result</h2><div id="scoreSummary"></div><div id="reviewItems"></div><div class="actions"><button onclick="page('tests')">दूसरा Test दें</button><button class="secondary" onclick="page('results')">सभी Results</button></div></div></section>
+</main>
+<script>
+const K='m2o_v3_data';let data=JSON.parse(localStorage.getItem(K)||'{"tests":[],"results":[]}'),draft=[],active=null,answers={},pos=0,seconds=0,tick=null;
+function persist(){localStorage.setItem(K,JSON.stringify(data));refresh()}
+function page(id,btn){document.querySelectorAll('.screen').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');refresh()}
+function el(id){return document.getElementById(id)}function v(id){return el(id).value.trim()}
+function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function refresh(){
+ el('sTests').textContent=data.tests.length;el('sQuestions').textContent=data.tests.reduce((n,t)=>n+t.questions.length,0);el('sAttempts').textContent=data.results.length;
+ let cats=[...new Set(data.tests.map(t=>t.category))],old=el('filterCat').value;el('filterCat').innerHTML='<option value="all">सभी Categories</option>'+cats.map(c=>`<option>${safe(c)}</option>`).join('');if(cats.includes(old))el('filterCat').value=old;
+ renderTests();renderResults();renderAdmin()
+}
+function addQuestion(){let q={question:v('question'),A:v('a'),B:v('b'),C:v('c'),D:v('d'),answer:v('answer'),explanation:v('explain')};if(!q.question||!q.A||!q.B||!q.C||!q.D){alert('प्रश्न और चारों options भरें।');return}draft.push(q);clearQuestion();el('draftCount').textContent=`इस टेस्ट में ${draft.length} प्रश्न जोड़े गए हैं।`}
+function clearQuestion(){['question','a','b','c','d','explain'].forEach(id=>el(id).value='')}
+function publishTest(){if(!v('title')||!draft.length){el('adminMsg').textContent='Test का नाम और कम-से-कम एक प्रश्न जरूरी है।';return}let t={id:Date.now(),category:v('cat'),title:v('title'),minutes:Math.max(1,+v('minutes')||10),positive:+v('positive')||0,negative:+v('negative')||0,questions:draft};data.tests.unshift(t);draft=[];el('draftCount').textContent='इस टेस्ट में 0 प्रश्न जोड़े गए हैं।';el('adminMsg').textContent='Test सेव हो गया। अब Available Tests में दिखेगा।';el('title').value='';persist()}
+function renderTests(){if(!el('testList'))return;let c=el('filterCat').value,s=v('searchTest').toLowerCase(),arr=data.tests.filter(t=>(c==='all'||t.category===c)&&t.title.toLowerCase().includes(s));el('testList').innerHTML=arr.length?arr.map(t=>`<div class="testrow"><div><span class="pill">${safe(t.category)}</span><h3>${safe(t.title)}</h3><div class="muted">${t.questions.length} प्रश्न · ${t.minutes} मिनट · +${t.positive} / -${t.negative}</div></div><button onclick="start(${t.id})">Start Test</button></div>`).join(''):'<p class="muted">कोई टेस्ट उपलब्ध नहीं है। Admin Panel से टेस्ट बनाएं।</p>'}
+function renderAdmin(){if(!el('adminTests'))return;el('adminTests').innerHTML=data.tests.length?data.tests.map(t=>`<div class="testrow"><div><b>${safe(t.title)}</b><div class="muted">${safe(t.category)} · ${t.questions.length} प्रश्न</div></div><button class="red" onclick="removeTest(${t.id})">Delete</button></div>`).join(''):'<p class="muted">अभी कोई टेस्ट नहीं।</p>'}
+function removeTest(id){if(confirm('यह Test और उसके प्रश्न हटाएं?')){data.tests=data.tests.filter(t=>t.id!==id);persist()}}
+function start(id){active=data.tests.find(t=>t.id===id);if(!active)return;answers={};pos=0;seconds=active.minutes*60;el('examTitle').textContent=active.title;el('examCategory').textContent=active.category;page('exam');drawQuestion();updateTimer();clearInterval(tick);tick=setInterval(()=>{seconds--;updateTimer();if(seconds<=0)submitTest(true)},1000)}
+function updateTimer(){el('timer').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0')}
+function drawQuestion(){let q=active.questions[pos];el('bar').style.width=((pos+1)/active.questions.length*100)+'%';el('questionArea').innerHTML=`<div class="muted">Question ${pos+1} of ${active.questions.length}</div><h3>${safe(q.question)}</h3>`+['A','B','C','D'].map(k=>`<button class="option ${answers[pos]===k?'selected':''}" onclick="pick('${k}')">${k}. ${safe(q[k])}</button>`).join('')}
+function pick(k){answers[pos]=k;drawQuestion()}function nextQ(){if(pos<active.questions.length-1){pos++;drawQuestion()}}function previousQ(){if(pos>0){pos--;drawQuestion()}}
+function submitTest(auto=false){if(!active)return;if(!auto&&!confirm('क्या आप Test Submit करना चाहते हैं?'))return;clearInterval(tick);let correct=0,wrong=0,unanswered=0,score=0;active.questions.forEach((q,i)=>{if(!answers[i])unanswered++;else if(answers[i]===q.answer){correct++;score+=active.positive}else{wrong++;score-=active.negative}});let max=active.questions.length*active.positive;let r={id:Date.now(),title:active.title,category:active.category,correct,wrong,unanswered,score,max,percent:max?Math.max(0,score/max*100):0,answers:{...answers},questions:active.questions};data.results.unshift(r);persist();el('scoreSummary').innerHTML=`<div class="stats"><div class="stat"><b>${score.toFixed(2)}</b><span class="muted">आपके अंक</span></div><div class="stat"><b>${correct}</b><span class="muted">सही</span></div><div class="stat"><b>${wrong}</b><span class="muted">गलत · ${unanswered} छोड़े</span></div></div><p>कुल अंक: ${max} · प्रतिशत: ${r.percent.toFixed(1)}% ${auto?'· समय समाप्त होने पर auto-submit हुआ':''}</p>`;el('reviewItems').innerHTML='<h3>Answer Review</h3>'+r.questions.map((q,i)=>`<div class="card"><b>Q${i+1}. ${safe(q.question)}</b><p class="muted">आपका उत्तर: ${answers[i]||'नहीं दिया'} · सही उत्तर: ${q.answer}</p><p>${safe(q.explanation)}</p></div>`).join('');active=null;page('review')}
+function renderResults(){if(!el('resultList'))return;el('resultList').innerHTML=data.results.length?'<table><tr><th>Test</th><th>Score</th><th>Correct</th><th>Date</th></tr>'+data.results.map(r=>`<tr><td>${safe(r.title)}</td><td>${r.score.toFixed(2)} / ${r.max}</td><td>${r.correct}</td><td>${new Date(r.id).toLocaleDateString('en-IN')}</td></tr>`).join('')+'</table>':'अभी कोई टेस्ट नहीं दिया गया।'}
+function backup(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='Maths2O_Backup.json';a.click();URL.revokeObjectURL(a.href)}
+async function restore(){let f=el('restoreFile').files[0];if(!f){alert('पहले backup JSON file चुनें।');return}try{let d=JSON.parse(await f.text());if(!Array.isArray(d.tests)||!Array.isArray(d.results))throw Error();if(!confirm('मौजूदा डेटा backup से replace होगा। जारी रखें?'))return;data=d;persist();alert('Backup restore हो गया।')}catch(e){alert('यह सही Maths2.O backup JSON नहीं है।')}}
+refresh();
+</script></body></html>
